@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -13,7 +14,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        $employees = Employee::all();
+        return view ('employees.index')->with('employees', $employees);
     }
 
     /**
@@ -23,7 +25,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        //
+        return view('employees.create');
     }
 
     /**
@@ -34,7 +36,12 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $requestData = $request->all();
+        $fileName = time().$request->file('photo')->getClientOriginalName();
+        $path = $request->file('photo')->storeAs('images', $fileName, 'public');
+        $requestData["photo"] = '/storage/'.$path;
+        Employee::create($requestData);
+        return redirect('employee')->with('flash_message', 'Employee Addedd!');
     }
 
     /**
